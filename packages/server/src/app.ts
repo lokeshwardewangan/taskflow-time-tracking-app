@@ -1,9 +1,12 @@
+import 'dotenv/config';
 import express from 'express';
 import type { Request, Response } from 'express';
-import 'dotenv/config';
+import cookieParser from 'cookie-parser';
+import authRoutes from './module/auth/auth.route';
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/health', (_req: Request, res: Response) => {
    try {
@@ -18,5 +21,7 @@ app.get('/health', (_req: Request, res: Response) => {
       });
    }
 });
+
+app.use('/api/auth', authRoutes);
 
 export default app;

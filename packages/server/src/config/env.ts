@@ -7,6 +7,7 @@ const envSchema = z.object({
    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
    FRONTEND_URL: z.string().url(),
    DATABASE_URL: z.string().url(),
+   JWT_SECRET: z.string().min(10, 'JWT secret must be at least 10 chars'),
 });
 
 const parsed = envSchema.safeParse(process.env);
