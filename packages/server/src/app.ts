@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './module/auth/auth.route';
 import taskRoutes from './module/task/task.route';
 import timeLogRoutes from './module/time-log/time-log.route';
+import summaryRoutes from './module/summary/summary.route';
 
 const app = express();
 app.use(express.json());
@@ -27,5 +28,6 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/time-logs', timeLogRoutes);
+app.use('/api/summary', summaryRoutes);
 
 export default app;
