@@ -3,6 +3,7 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './module/auth/auth.route';
+import taskRoutes from './module/task/task.route';
 
 const app = express();
 app.use(express.json());

@@ -1,0 +1,47 @@
+import type { Request, Response } from 'express';
+import { TaskService } from './task.service';
+import asyncHandler from '../../utils/async-handler';
+import { createTaskSchema, updateTaskSchema } from './task.schema';
+import { ApiResponse, HTTP } from '../../utils/response';
+
+export const getTasks = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore Set by auth middleware
+   const userId = req.user.userId;
+   const tasks = await TaskService.getTasks(userId);
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, tasks, 'Tasks retrieved successfully'));
+});
+
+export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore
+   const userId = req.user.userId;
+   const id = req.params.id as string;
+   const task = await TaskService.getTaskById(id, userId);
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, task, 'Task retrieved successfully'));
+});
+
+export const createTask = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore
+   const userId = req.user.userId;
+   const data = createTaskSchema.parse(req.body);
+   const task = await TaskService.createTask(userId, data);
+   return res
+      .status(HTTP.CREATED)
+      .json(new ApiResponse(HTTP.CREATED, task, 'Task created successfully'));
+});
+
+export const updateTask = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore
+   const userId = req.user.userId;
+   const id = req.params.id as string;
+   const data = updateTaskSchema.parse(req.body);
+   const task = await TaskService.updateTask(id, userId, data);
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, task, 'Task updated successfully'));
+});
+
+export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore
+   const userId = req.user.userId;
+   const id = req.params.id as string;
+   await TaskService.deleteTask(id, userId);
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, null, 'Task deleted successfully'));
+});
