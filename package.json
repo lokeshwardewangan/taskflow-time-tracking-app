@@ -1,24 +1,24 @@
 {
-  "name": "time-tracking-app",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "format": "prettier . --write",
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "husky": "^9.1.7",
-    "prettier": "3.9.8"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "dependencies": {
-    "lint-staged": "^17.5.1"
-  }
+   "name": "time-tracking-app",
+   "module": "index.ts",
+   "type": "module",
+   "private": true,
+   "scripts": {
+      "format": "prettier . --write",
+      "prepare": "husky"
+   },
+   "devDependencies": {
+      "@types/bun": "latest",
+      "husky": "^9.1.7",
+      "prettier": "3.9.8"
+   },
+   "peerDependencies": {
+      "typescript": "^5"
+   },
+   "workspaces": [
+      "packages/*"
+   ],
+   "dependencies": {
+      "lint-staged": "^17.5.1"
+   }
 }
