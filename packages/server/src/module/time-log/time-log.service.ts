@@ -47,4 +47,12 @@ export class TimeLogService {
 
       return TimeLogRepository.stopLog(activeLog.id, duration);
    }
+
+   static async getLogsByTask(taskId: string, userId: string) {
+      const task = await TaskRepository.findTaskByIdAndUser(taskId, userId);
+      if (!task) {
+         throw new ApiError(HTTP.NOT_FOUND, 'Task not found');
+      }
+      return TimeLogRepository.findLogsByTask(taskId, userId);
+   }
 }

@@ -36,4 +36,11 @@ export class TimeLogRepository {
          include: { task: true },
       });
    }
+
+   static async findLogsByTask(taskId: string, userId: string) {
+      return prisma.timeLog.findMany({
+         where: { taskId, userId },
+         orderBy: { startTime: 'desc' },
+      });
+   }
 }

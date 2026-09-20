@@ -25,3 +25,11 @@ export const stopTimer = asyncHandler(async (req: Request, res: Response) => {
    const log = await TimeLogService.stopTimer(taskId, userId);
    return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, log, 'Timer stopped successfully'));
 });
+
+export const getLogsByTask = asyncHandler(async (req: Request, res: Response) => {
+   // @ts-ignore
+   const userId = req.user.userId;
+   const taskId = req.params.taskId as string;
+   const logs = await TimeLogService.getLogsByTask(taskId, userId);
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, logs, 'Time logs retrieved'));
+});

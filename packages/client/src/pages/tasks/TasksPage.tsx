@@ -13,7 +13,14 @@ import {
 import type { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { TaskFormModal } from '@/features/tasks/components/TaskFormModal';
-import { useTasks, useCreateTask, useUpdateTask, useDeleteTask } from '@/features/tasks/hooks';
+import {
+   useTasks,
+   useCreateTask,
+   useUpdateTask,
+   useDeleteTask,
+   useStartTaskTimer,
+   useStopTaskTimer,
+} from '@/features/tasks/hooks';
 import { toast } from 'sonner';
 
 export default function TasksPage() {
@@ -24,6 +31,8 @@ export default function TasksPage() {
    const createTaskMutation = useCreateTask();
    const updateTaskMutation = useUpdateTask();
    const deleteTaskMutation = useDeleteTask();
+   const startTimerMutation = useStartTaskTimer();
+   const stopTimerMutation = useStopTaskTimer();
 
    const [searchQuery, setSearchQuery] = useState('');
    const [filterStatus, setFilterStatus] = useState<TaskStatus | 'ALL'>('ALL');
@@ -60,7 +69,7 @@ export default function TasksPage() {
          return;
       }
       setActiveTaskId(id);
-      updateTaskMutation.mutate({ id, payload: { status: 'IN_PROGRESS' } });
+      startTimerMutation.mutate(id);
    };
 
    const handleConfirmSwitchTimer = () => {
@@ -68,14 +77,11 @@ export default function TasksPage() {
 
       const currentActive = tasks.find((t) => t.id === activeTaskId);
       if (currentActive) {
-         updateTaskMutation.mutate({
-            id: activeTaskId,
-            payload: { status: 'PENDING', trackedTime: currentActive.trackedTime },
-         });
+         stopTimerMutation.mutate(activeTaskId);
       }
 
       setActiveTaskId(pendingStartTaskId);
-      updateTaskMutation.mutate({ id: pendingStartTaskId, payload: { status: 'IN_PROGRESS' } });
+      startTimerMutation.mutate(pendingStartTaskId);
       setPendingStartTaskId(null);
    };
 
@@ -86,8 +92,10 @@ export default function TasksPage() {
 
    const handleStopTimer = (id: string) => {
       if (activeTaskId === id) setActiveTaskId(null);
+
       const current = tasks.find((t) => t.id === id);
       if (current) {
+         stopTimerMutation.mutate(id);
          updateTaskMutation.mutate({
             id,
             payload: { status: 'PENDING', trackedTime: current.trackedTime },
@@ -96,7 +104,10 @@ export default function TasksPage() {
    };
 
    const handleComplete = (id: string) => {
-      if (activeTaskId === id) setActiveTaskId(null);
+      if (activeTaskId === id) {
+         setActiveTaskId(null);
+         stopTimerMutation.mutate(id);
+      }
       const current = tasks.find((t) => t.id === id);
       if (current) {
          updateTaskMutation.mutate({

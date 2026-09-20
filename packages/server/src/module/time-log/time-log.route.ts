@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../../middleware/auth.middleware';
-import { getActiveTimer, startTimer, stopTimer } from './time-log.controller';
+import { getActiveTimer, startTimer, stopTimer, getLogsByTask } from './time-log.controller';
 
 const router = Router();
 
@@ -8,6 +8,7 @@ const router = Router();
 router.use(requireAuth);
 
 router.get('/active', getActiveTimer);
+router.get('/task/:taskId', getLogsByTask);
 router.post('/task/:taskId/start', startTimer);
 router.post('/task/:taskId/stop', stopTimer);
 

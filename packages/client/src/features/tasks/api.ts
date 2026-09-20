@@ -24,3 +24,18 @@ export const deleteTask = async (id: string): Promise<ApiResponse<null>> => {
    const { data } = await api.delete<ApiResponse<null>>(`/tasks/${id}`);
    return data;
 };
+
+export const getTaskTimeLogs = async (taskId: string): Promise<ApiResponse<any>> => {
+   const { data } = await api.get<ApiResponse<any>>(`/time-logs/task/${taskId}`);
+   return data;
+};
+
+export const startTaskTimer = async (taskId: string): Promise<ApiResponse<any>> => {
+   const { data } = await api.post<ApiResponse<any>>(`/time-logs/task/${taskId}/start`);
+   return data;
+};
+
+export const stopTaskTimer = async (taskId: string): Promise<ApiResponse<any>> => {
+   const { data } = await api.post<ApiResponse<any>>(`/time-logs/task/${taskId}/stop`);
+   return data;
+};
