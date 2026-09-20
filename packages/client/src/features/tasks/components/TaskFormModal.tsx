@@ -17,7 +17,6 @@ export function TaskFormModal({ isOpen, onClose, onSave, initialData }: TaskForm
       if (isOpen) {
          // eslint-disable-next-line react-hooks/set-state-in-effect
          setTitle(initialData?.title || '');
-         // eslint-disable-next-line react-hooks/set-state-in-effect
          setDescription(initialData?.description || '');
       }
    }, [isOpen, initialData]);
