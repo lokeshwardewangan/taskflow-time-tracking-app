@@ -1,16 +1,12 @@
 import { Outlet, Navigate } from 'react-router';
 import { useUser } from '@/features/auth/hooks';
-import { Loader2 } from 'lucide-react';
+import { SplashLoader } from '@/components/ui/SplashLoader';
 
 export default function AuthLayout() {
    const { data: userResponse, isLoading } = useUser();
 
    if (isLoading) {
-      return (
-         <div className="min-h-screen flex items-center justify-center bg-white">
-            <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
-         </div>
-      );
+      return <SplashLoader message="Authenticating..." />;
    }
 
    if (userResponse?.data) {

@@ -13,6 +13,7 @@ import {
 import type { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { TaskFormModal } from '@/features/tasks/components/TaskFormModal';
+import { TasksSkeleton } from '@/features/tasks/components/TasksSkeleton';
 import {
    useTasks,
    useCreateTask,
@@ -285,9 +286,7 @@ export default function TasksPage() {
 
             {/* Task Grid rendering */}
             {isLoading ? (
-               <div className="flex items-center justify-center p-20 text-zinc-400">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-               </div>
+               <TasksSkeleton />
             ) : filteredTasks.length === 0 ? (
                <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-zinc-300 rounded-2xl bg-zinc-50/50">
                   <div className="w-16 h-16 rounded-2xl bg-white border border-zinc-200 flex items-center justify-center mb-5 shadow-sm">

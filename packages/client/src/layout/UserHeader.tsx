@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink } from 'react-router';
 import { User, LogOut, ChevronDown } from 'lucide-react';
 import { useLogoutUser } from '@/features/auth/hooks';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,14 +12,14 @@ interface UserHeaderProps {
 export function UserHeader({ user }: UserHeaderProps) {
    const logoutMutation = useLogoutUser();
    const queryClient = useQueryClient();
-   const navigate = useNavigate();
 
    const handleLogout = () => {
       toast.promise(logoutMutation.mutateAsync(), {
          loading: 'Logging out...',
          success: () => {
-            queryClient.removeQueries({ queryKey: ['user'] });
-            navigate('/auth/login');
+            // Using setQueryData safely overrides the memory to null synchronously,
+            // bypassing the isLoading re-render and instantly forcing UserLayout to throw the Navigate to Auth!
+            queryClient.setQueryData(['user'], null);
             return 'Logged out successfully';
          },
          error: 'Failed to log out',

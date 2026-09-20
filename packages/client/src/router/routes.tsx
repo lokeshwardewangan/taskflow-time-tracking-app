@@ -8,16 +8,13 @@ import TasksPage from '@/pages/tasks/TasksPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import { Navigate } from 'react-router';
 import { useUser } from '@/features/auth/hooks';
-import { Loader2 } from 'lucide-react';
+import { SplashLoader } from '@/components/ui/SplashLoader';
 
 const RootRedirect = () => {
    const { data: userResponse, isLoading } = useUser();
-   if (isLoading)
-      return (
-         <div className="min-h-screen flex items-center justify-center bg-white">
-            <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
-         </div>
-      );
+   if (isLoading) {
+      return <SplashLoader message="Loading interface..." />;
+   }
    if (userResponse?.data) return <Navigate to="/dashboard" replace />;
    return <Navigate to="/auth/login" replace />;
 };

@@ -3,18 +3,14 @@ import { SummaryCards } from '@/features/dashboard/components/SummaryCards';
 import { TimeByTaskChart } from '@/features/dashboard/components/TimeByTaskChart';
 import { ActivityTable } from '@/features/dashboard/components/ActivityTable';
 import { useDailySummary } from '@/features/dashboard/hooks';
-import { Loader2 } from 'lucide-react';
+import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton';
 
 export default function DashboardPage() {
    const { data: response, isLoading } = useDailySummary();
    const data = response?.data;
 
    if (isLoading || !data) {
-      return (
-         <div className="flex items-center justify-center min-h-[50vh]">
-            <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
-         </div>
-      );
+      return <DashboardSkeleton />;
    }
 
    const SUMMARY_METRICS = {

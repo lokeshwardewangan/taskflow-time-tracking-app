@@ -1,17 +1,13 @@
 import { Outlet, Navigate } from 'react-router';
-import { Loader2 } from 'lucide-react';
 import { useUser } from '@/features/auth/hooks';
 import { UserHeader } from './UserHeader';
+import { SplashLoader } from '@/components/ui/SplashLoader';
 
 const UserLayout = () => {
    const { data: userResponse, isLoading } = useUser();
 
    if (isLoading) {
-      return (
-         <div className="min-h-screen flex items-center justify-center bg-white">
-            <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
-         </div>
-      );
+      return <SplashLoader message="Preparing workspace..." />;
    }
 
    if (!userResponse?.data) {
