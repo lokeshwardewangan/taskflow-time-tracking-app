@@ -19,6 +19,8 @@
       "packages/*"
    ],
    "dependencies": {
-      "lint-staged": "^17.5.1"
+      "@tailwindcss/vite": "^4.3.3",
+      "lint-staged": "^17.5.1",
+      "tailwindcss": "^4.3.3"
    }
 }
