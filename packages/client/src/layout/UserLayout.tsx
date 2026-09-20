@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, ChevronDown } from 'lucide-react';
 
 const UserLayout = () => {
    return (
@@ -23,17 +23,17 @@ const UserLayout = () => {
                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                      </div>
-                     <span className="font-bold tracking-tight text-lg text-zinc-950 hidden sm:block">
+                     <span className="font-bold tracking-tight text-xl relative top-0.5 text-zinc-950 hidden sm:block">
                         TimeFlow
                      </span>
                   </div>
                   {/* Nav Links */}
-                  <nav className="hidden md:flex items-center gap-6">
+                  <nav className="hidden md:flex items-center gap-1.5 px-6 border-l border-zinc-200/50">
                      <NavLink
                         to="/dashboard"
                         end
                         className={({ isActive }) =>
-                           `text-sm font-medium transition-colors ${isActive ? 'text-zinc-950' : 'text-zinc-500 hover:text-zinc-950'}`
+                           `px-3 py-1.5 rounded-md text-sm font-medium transition-all ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
                         }
                      >
                         Dashboard
@@ -41,7 +41,7 @@ const UserLayout = () => {
                      <NavLink
                         to="/tasks"
                         className={({ isActive }) =>
-                           `text-sm font-medium transition-colors ${isActive ? 'text-zinc-950' : 'text-zinc-500 hover:text-zinc-950'}`
+                           `px-3 py-1.5 rounded-md text-sm font-medium transition-all ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
                         }
                      >
                         Tasks
@@ -56,10 +56,14 @@ const UserLayout = () => {
                <div className="flex items-center justify-end gap-3 shrink-0">
                   {/* User Profile Dropdown */}
                   <div className="relative group/nav">
-                     <button className="flex items-center justify-center hover:bg-zinc-50 p-0.5 rounded-full border border-transparent hover:border-zinc-200 transition-all focus:outline-none outline-none">
-                        <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                           <User className="w-4 h-4 text-zinc-600" />
+                     <button className="flex items-center gap-2.5 hover:bg-zinc-50 pl-1 pr-3 py-1 rounded-full border border-transparent hover:border-zinc-200 transition-all focus:outline-none outline-none">
+                        <div className="w-8 h-8 rounded-full bg-zinc-950 text-white flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                           <User className="w-4 h-4" />
                         </div>
+                        <span className="text-sm font-semibold text-zinc-700 hidden sm:block tracking-tight">
+                           Admin User
+                        </span>
+                        <ChevronDown className="w-3.5 h-3.5 text-zinc-400 hidden sm:block transition-transform group-hover/nav:-rotate-180 duration-300" />
                      </button>
 
                      {/* Dropdown Menu */}
