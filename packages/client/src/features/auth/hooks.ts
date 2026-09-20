@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getUser, loginUser, registerUser } from './api';
+import { getUser, loginUser, registerUser, logoutUser } from './api';
 import type { ApiResponse } from '@/types/api';
 import type { LoginInput, RegisterInput, User } from './types';
 
@@ -19,5 +19,11 @@ export const useUser = () => {
    return useQuery<ApiResponse<User>, Error>({
       queryKey: ['user'],
       queryFn: getUser,
+   });
+};
+
+export const useLogoutUser = () => {
+   return useMutation<ApiResponse<null>, Error, void>({
+      mutationFn: logoutUser,
    });
 };

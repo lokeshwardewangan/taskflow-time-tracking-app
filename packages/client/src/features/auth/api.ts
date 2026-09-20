@@ -16,3 +16,8 @@ export const getUser = async (): Promise<ApiResponse<User>> => {
    const { data } = await api.get<ApiResponse<User>>('/auth/me');
    return data;
 };
+
+export const logoutUser = async (): Promise<ApiResponse<null>> => {
+   const { data } = await api.post<ApiResponse<null>>('/auth/logout');
+   return data;
+};

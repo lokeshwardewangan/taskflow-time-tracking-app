@@ -94,9 +94,7 @@ export function LoginForm() {
                   <a
                      href="/forgot-password"
                      className="text-sm text-zinc-500 hover:text-zinc-900 font-medium transition-colors"
-                  >
-                     Forgot password?
-                  </a>
+                  ></a>
                </div>
                <div className="relative">
                   <Input

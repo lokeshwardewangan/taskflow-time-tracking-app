@@ -31,3 +31,11 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
    const user = req.user;
    return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, user, 'User profile retrieved'));
 });
+
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+   res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+   });
+   return res.status(HTTP.OK).json(new ApiResponse(HTTP.OK, null, 'Logged out successfully'));
+});
