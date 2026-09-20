@@ -15,18 +15,23 @@ export class SummaryService {
 
       let totalTrackedTimeToday = 0;
       const tasksWorkedOnMap = new Map();
+      const taskDailyDurationMap = new Map<string, number>();
 
       timeLogsToday.forEach((log) => {
+         let durationForLog = 0;
          // Accumulate duration (default to 0 if still running, or calculate elapsed)
          if (log.duration) {
-            totalTrackedTimeToday += log.duration;
+            durationForLog = log.duration;
          } else if (!log.endTime) {
             // Live active timer contribution
-            const liveDuration = Math.floor(
-               (new Date().getTime() - log.startTime.getTime()) / 1000
-            );
-            totalTrackedTimeToday += liveDuration;
+            durationForLog = Math.floor((new Date().getTime() - log.startTime.getTime()) / 1000);
          }
+
+         totalTrackedTimeToday += durationForLog;
+         taskDailyDurationMap.set(
+            log.taskId,
+            (taskDailyDurationMap.get(log.taskId) || 0) + durationForLog
+         );
 
          // Track Unique tasks worked on today
          if (!tasksWorkedOnMap.has(log.taskId)) {
@@ -34,7 +39,11 @@ export class SummaryService {
          }
       });
 
-      const tasksWorkedOnToday = Array.from(tasksWorkedOnMap.values());
+      // Override the physical DB's lifetime trackedTime with just TODAY's accumulated time for the dashboard context
+      const tasksWorkedOnToday = Array.from(tasksWorkedOnMap.values()).map((task) => ({
+         ...task,
+         trackedTime: taskDailyDurationMap.get(task.id) || 0,
+      }));
 
       // Fetch all tasks to get global completion statistics
       const allTasks = await TaskRepository.findAllTasksByUser(userId);
