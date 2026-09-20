@@ -53,7 +53,7 @@ export function TimeByTaskChart({ tasks }: TimeByTaskChartProps) {
                      fontWeight: 700,
                      color: '#09090b',
                      formatter: (val) => {
-                        const mins = parseInt(val, 10);
+                        const mins = typeof val === 'number' ? val : parseInt(val.toString(), 10);
                         const h = Math.floor(mins / 60);
                         const m = mins % 60;
                         return h > 0 ? `${h}h ${m}m` : `${m}m`;
@@ -68,7 +68,7 @@ export function TimeByTaskChart({ tasks }: TimeByTaskChartProps) {
                      color: '#a1a1aa',
                      formatter: function (w) {
                         const totalMins = w.globals.seriesTotals.reduce(
-                           (a: any, b: any) => a + b,
+                           (a: number, b: number) => a + b,
                            0
                         );
                         const h = Math.floor(totalMins / 60);

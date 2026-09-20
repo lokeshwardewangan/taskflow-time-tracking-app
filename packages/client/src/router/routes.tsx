@@ -6,18 +6,7 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import UserLayout from '@/layout/UserLayout';
 import TasksPage from '@/pages/tasks/TasksPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
-import { Navigate } from 'react-router';
-import { useUser } from '@/features/auth/hooks';
-import { SplashLoader } from '@/components/ui/SplashLoader';
-
-const RootRedirect = () => {
-   const { data: userResponse, isLoading } = useUser();
-   if (isLoading) {
-      return <SplashLoader message="Loading interface..." />;
-   }
-   if (userResponse?.data) return <Navigate to="/dashboard" replace />;
-   return <Navigate to="/auth/login" replace />;
-};
+import { RootRedirect } from './RootRedirect';
 
 const router = createBrowserRouter([
    {

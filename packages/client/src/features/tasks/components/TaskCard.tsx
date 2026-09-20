@@ -14,6 +14,7 @@ import type { Task } from '../types';
 import { formatTime } from '@/lib/time';
 import { useState } from 'react';
 import { useTaskTimeLogs } from '../hooks';
+import type { TimeLog } from '../api';
 
 interface TaskCardProps {
    task: Task;
@@ -41,7 +42,7 @@ export function TaskCard({
       isLogsModalOpen
    );
    const logs = logsResponse?.data || [];
-   const totalLogsDuration = logs.reduce((acc: number, log: any) => {
+   const totalLogsDuration = logs.reduce((acc: number, log: TimeLog) => {
       const duration =
          log.duration ??
          Math.floor((new Date().getTime() - new Date(log.startTime).getTime()) / 1000);
@@ -204,7 +205,7 @@ export function TaskCard({
                         </div>
                      ) : logs.length > 0 ? (
                         <div className="divide-y divide-zinc-100">
-                           {logs.map((log: any) => {
+                           {logs.map((log: TimeLog) => {
                               const isRunning = !log.endTime;
                               return (
                                  <div
@@ -223,7 +224,7 @@ export function TaskCard({
                                           {' - '}
                                           {isRunning
                                              ? 'Running'
-                                             : new Date(log.endTime).toLocaleTimeString([], {
+                                             : new Date(log.endTime!).toLocaleTimeString([], {
                                                   hour: '2-digit',
                                                   minute: '2-digit',
                                                })}

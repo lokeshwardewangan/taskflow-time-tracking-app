@@ -2,6 +2,15 @@ import api from '@/lib/api';
 import type { Task, CreateTaskInput, UpdateTaskInput } from './types';
 import type { ApiResponse } from '@/types/api';
 
+export interface TimeLog {
+   id: string;
+   taskId: string;
+   userId: string;
+   startTime: string;
+   endTime: string | null;
+   duration: number | null;
+}
+
 export const getTasks = async (): Promise<ApiResponse<Task[]>> => {
    const { data } = await api.get<ApiResponse<Task[]>>('/tasks');
    return data;
@@ -25,17 +34,17 @@ export const deleteTask = async (id: string): Promise<ApiResponse<null>> => {
    return data;
 };
 
-export const getTaskTimeLogs = async (taskId: string): Promise<ApiResponse<any>> => {
-   const { data } = await api.get<ApiResponse<any>>(`/time-logs/task/${taskId}`);
+export const getTaskTimeLogs = async (taskId: string): Promise<ApiResponse<TimeLog[]>> => {
+   const { data } = await api.get<ApiResponse<TimeLog[]>>(`/time-logs/task/${taskId}`);
    return data;
 };
 
-export const startTaskTimer = async (taskId: string): Promise<ApiResponse<any>> => {
-   const { data } = await api.post<ApiResponse<any>>(`/time-logs/task/${taskId}/start`);
+export const startTaskTimer = async (taskId: string): Promise<ApiResponse<TimeLog>> => {
+   const { data } = await api.post<ApiResponse<TimeLog>>(`/time-logs/task/${taskId}/start`);
    return data;
 };
 
-export const stopTaskTimer = async (taskId: string): Promise<ApiResponse<any>> => {
-   const { data } = await api.post<ApiResponse<any>>(`/time-logs/task/${taskId}/stop`);
+export const stopTaskTimer = async (taskId: string): Promise<ApiResponse<TimeLog>> => {
+   const { data } = await api.post<ApiResponse<TimeLog>>(`/time-logs/task/${taskId}/stop`);
    return data;
 };

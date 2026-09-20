@@ -1,15 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-   Plus,
-   Search,
-   CheckCircle2,
-   Loader2,
-   LayoutGrid,
-   Clock,
-   Circle,
-   Square,
-} from 'lucide-react';
+import { Plus, Search, CheckCircle2, LayoutGrid, Clock, Circle, Square } from 'lucide-react';
 import type { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { TaskFormModal } from '@/features/tasks/components/TaskFormModal';
@@ -50,7 +41,7 @@ export default function TasksPage() {
    useEffect(() => {
       if (!activeTaskId) return;
       const interval = setInterval(() => {
-         queryClient.setQueryData(['tasks'], (oldData: any) => {
+         queryClient.setQueryData(['tasks'], (oldData: { data: Task[] } | undefined) => {
             if (!oldData) return oldData;
             return {
                ...oldData,
