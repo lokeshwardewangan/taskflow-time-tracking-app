@@ -1,6 +1,19 @@
-import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useEffect } from 'react';
+import { X, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import type { Task } from '../types';
+
+const taskSchema = z.object({
+   title: z
+      .string()
+      .min(1, 'Task title is required')
+      .max(100, 'Title cannot exceed 100 characters'),
+   description: z.string().max(500, 'Description cannot exceed 500 characters').optional(),
+});
+
+type TaskFormValues = z.infer<typeof taskSchema>;
 
 interface TaskFormModalProps {
    isOpen: boolean;
@@ -10,22 +23,30 @@ interface TaskFormModalProps {
 }
 
 export function TaskFormModal({ isOpen, onClose, onSave, initialData }: TaskFormModalProps) {
-   const [title, setTitle] = useState('');
-   const [description, setDescription] = useState('');
+   const {
+      register,
+      handleSubmit,
+      reset,
+      formState: { errors },
+   } = useForm<TaskFormValues>({
+      resolver: zodResolver(taskSchema),
+      defaultValues: { title: '', description: '' },
+   });
 
    useEffect(() => {
       if (isOpen) {
-         // eslint-disable-next-line react-hooks/set-state-in-effect
-         setTitle(initialData?.title || '');
-         setDescription(initialData?.description || '');
+         if (initialData) {
+            reset({ title: initialData.title, description: initialData.description });
+         } else {
+            reset({ title: '', description: '' });
+         }
       }
-   }, [isOpen, initialData]);
+   }, [isOpen, initialData, reset]);
 
    if (!isOpen) return null;
 
-   const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave({ title, description });
+   const onSubmit = (data: TaskFormValues) => {
+      onSave({ title: data.title, description: data.description || '' });
    };
 
    return (
@@ -48,29 +69,47 @@ export function TaskFormModal({ isOpen, onClose, onSave, initialData }: TaskForm
                </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
                <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-900">Task Title</label>
                   <input
                      type="text"
-                     required
                      autoFocus
-                     className="w-full h-11 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 shadow-sm"
+                     {...register('title')}
+                     className={`w-full h-11 px-3 py-2 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/10 transition-all placeholder:text-zinc-400 shadow-sm ${
+                        errors.title
+                           ? 'border-red-500 focus:border-red-500 text-red-900 placeholder:text-red-300'
+                           : 'border-zinc-200 focus:border-zinc-500'
+                     }`}
                      placeholder="e.g. Design presentation slides"
-                     value={title}
-                     onChange={(e) => setTitle(e.target.value)}
                   />
+                  {errors.title && (
+                     <p className="text-xs text-red-500 flex items-center gap-1.5 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {errors.title.message}
+                     </p>
+                  )}
                </div>
+
                <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-900">
                      Description <span className="text-zinc-500 font-normal">(Optional)</span>
                   </label>
                   <textarea
-                     className="w-full h-24 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-500 transition-all resize-none placeholder:text-zinc-400 shadow-sm"
+                     {...register('description')}
+                     className={`w-full h-24 px-3 py-2 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/10 transition-all resize-none placeholder:text-zinc-400 shadow-sm ${
+                        errors.description
+                           ? 'border-red-500 focus:border-red-500 text-red-900 placeholder:text-red-300'
+                           : 'border-zinc-200 focus:border-zinc-500'
+                     }`}
                      placeholder="Add some details..."
-                     value={description}
-                     onChange={(e) => setDescription(e.target.value)}
                   />
+                  {errors.description && (
+                     <p className="text-xs text-red-500 flex items-center gap-1.5 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {errors.description.message}
+                     </p>
+                  )}
                </div>
 
                <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3">

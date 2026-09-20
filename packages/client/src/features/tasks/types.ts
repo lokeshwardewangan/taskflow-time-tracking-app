@@ -7,3 +7,8 @@ export interface Task {
    status: TaskStatus;
    trackedTime: number; // in seconds
 }
+
+export type CreateTaskInput = Pick<Task, 'title' | 'description'>;
+export type UpdateTaskInput = Partial<
+   Pick<Task, 'title' | 'description' | 'status' | 'trackedTime'>
+>;

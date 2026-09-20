@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
    Plus,
    Search,
@@ -12,63 +13,70 @@ import {
 import type { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { TaskFormModal } from '@/features/tasks/components/TaskFormModal';
-
-// --- Mock Initial Data ---
-const INITIAL_TASKS: Task[] = [
-   {
-      id: 't-1',
-      title: 'Design Authentication Flow',
-      description: 'Draft the UX mockups for login and signup including error states.',
-      status: 'PENDING',
-      trackedTime: 0,
-   },
-   {
-      id: 't-2',
-      title: 'Setup Database Schema',
-      description: 'Configure Prisma and migrate the initial user mapping.',
-      status: 'IN_PROGRESS',
-      trackedTime: 3450,
-   },
-   {
-      id: 't-3',
-      title: 'Initialize Git Repository',
-      description: 'Setup monorepo structure with pnpm/bun and linting rules.',
-      status: 'COMPLETED',
-      trackedTime: 1240,
-   },
-];
+import { useTasks, useCreateTask, useUpdateTask, useDeleteTask } from '@/features/tasks/hooks';
+import { toast } from 'sonner';
 
 export default function TasksPage() {
-   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+   const queryClient = useQueryClient();
+   const { data: tasksResponse, isLoading } = useTasks();
+   const tasks = tasksResponse?.data || [];
+
+   const createTaskMutation = useCreateTask();
+   const updateTaskMutation = useUpdateTask();
+   const deleteTaskMutation = useDeleteTask();
+
    const [searchQuery, setSearchQuery] = useState('');
    const [filterStatus, setFilterStatus] = useState<TaskStatus | 'ALL'>('ALL');
-   const [isLoading] = useState(false);
 
    // Form Modal State
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-   // Timer Mocks
-   const [activeTaskId, setActiveTaskId] = useState<string | null>(
-      INITIAL_TASKS.find((t) => t.status === 'IN_PROGRESS')?.id || null
-   );
+   // Timer Mocks (Patching query state in real-time)
+   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+   const [pendingStartTaskId, setPendingStartTaskId] = useState<string | null>(null);
    const activeTask = tasks.find((t) => t.id === activeTaskId);
 
-   // Mock ticking timer logic
    useEffect(() => {
       if (!activeTaskId) return;
       const interval = setInterval(() => {
-         setTasks((prev) =>
-            prev.map((t) => (t.id === activeTaskId ? { ...t, trackedTime: t.trackedTime + 1 } : t))
-         );
+         queryClient.setQueryData(['tasks'], (oldData: any) => {
+            if (!oldData) return oldData;
+            return {
+               ...oldData,
+               data: oldData.data.map((t: Task) =>
+                  t.id === activeTaskId ? { ...t, trackedTime: t.trackedTime + 1 } : t
+               ),
+            };
+         });
       }, 1000);
       return () => clearInterval(interval);
-   }, [activeTaskId]);
+   }, [activeTaskId, queryClient]);
 
    // --- Actions ---
    const handleStartTimer = (id: string) => {
+      if (activeTaskId && activeTaskId !== id) {
+         setPendingStartTaskId(id);
+         return;
+      }
       setActiveTaskId(id);
-      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'IN_PROGRESS' } : t)));
+      updateTaskMutation.mutate({ id, payload: { status: 'IN_PROGRESS' } });
+   };
+
+   const handleConfirmSwitchTimer = () => {
+      if (!pendingStartTaskId || !activeTaskId) return;
+
+      const currentActive = tasks.find((t) => t.id === activeTaskId);
+      if (currentActive) {
+         updateTaskMutation.mutate({
+            id: activeTaskId,
+            payload: { status: 'PENDING', trackedTime: currentActive.trackedTime },
+         });
+      }
+
+      setActiveTaskId(pendingStartTaskId);
+      updateTaskMutation.mutate({ id: pendingStartTaskId, payload: { status: 'IN_PROGRESS' } });
+      setPendingStartTaskId(null);
    };
 
    const formatTime = (seconds: number) => {
@@ -78,16 +86,32 @@ export default function TasksPage() {
 
    const handleStopTimer = (id: string) => {
       if (activeTaskId === id) setActiveTaskId(null);
+      const current = tasks.find((t) => t.id === id);
+      if (current) {
+         updateTaskMutation.mutate({
+            id,
+            payload: { status: 'PENDING', trackedTime: current.trackedTime },
+         });
+      }
    };
 
    const handleComplete = (id: string) => {
       if (activeTaskId === id) setActiveTaskId(null);
-      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'COMPLETED' } : t)));
+      const current = tasks.find((t) => t.id === id);
+      if (current) {
+         updateTaskMutation.mutate({
+            id,
+            payload: { status: 'COMPLETED', trackedTime: current.trackedTime },
+         });
+         toast.success('Task marked as completed!');
+      }
    };
 
    const handleDelete = (id: string) => {
       if (activeTaskId === id) setActiveTaskId(null);
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      deleteTaskMutation.mutate(id, {
+         onSuccess: () => toast.success('Task deleted successfully'),
+      });
    };
 
    const handleOpenModal = (task?: Task) => {
@@ -97,15 +121,19 @@ export default function TasksPage() {
 
    const handleSaveTask = (data: { title: string; description: string }) => {
       if (editingTask) {
-         setTasks((prev) => prev.map((t) => (t.id === editingTask.id ? { ...t, ...data } : t)));
+         const promise = updateTaskMutation.mutateAsync({ id: editingTask.id, payload: data });
+         toast.promise(promise, {
+            loading: 'Updating task...',
+            success: 'Task updated successfully!',
+            error: 'Failed to update task',
+         });
       } else {
-         const newTask: Task = {
-            id: `t-${Date.now()}`,
-            ...data,
-            status: 'PENDING',
-            trackedTime: 0,
-         };
-         setTasks([newTask, ...tasks]);
+         const promise = createTaskMutation.mutateAsync(data);
+         toast.promise(promise, {
+            loading: 'Creating task...',
+            success: 'Task created successfully!',
+            error: 'Failed to create task',
+         });
       }
       setIsModalOpen(false);
    };
@@ -120,11 +148,11 @@ export default function TasksPage() {
    });
 
    return (
-      <div className="pb-20 animate-in fade-in duration-500">
+      <div className="pb-20">
          <main className="max-w-[1400px] mx-auto px-6 mt-10">
             {/* Global Active Timer Banner */}
             {activeTask && (
-               <div className="mb-8 p-4 sm:p-5 rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+               <div className="mb-8 p-4 sm:p-5 rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
                      <div className="w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm flex flex-shrink-0 items-center justify-center relative">
                         <div className="absolute inset-0 rounded-full border-2 border-red-500/20 animate-ping" />
@@ -250,7 +278,7 @@ export default function TasksPage() {
                   <Loader2 className="w-8 h-8 animate-spin" />
                </div>
             ) : filteredTasks.length === 0 ? (
-               <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in zoom-in-95 duration-500 border border-dashed border-zinc-300 rounded-2xl bg-zinc-50/50">
+               <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-zinc-300 rounded-2xl bg-zinc-50/50">
                   <div className="w-16 h-16 rounded-2xl bg-white border border-zinc-200 flex items-center justify-center mb-5 shadow-sm">
                      {filterStatus === 'ALL' ? (
                         <CheckCircle2 className="w-8 h-8 text-zinc-300" />
@@ -276,7 +304,7 @@ export default function TasksPage() {
                   )}
                </div>
             ) : (
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredTasks.map((task) => (
                      <TaskCard
                         key={task.id}
@@ -300,6 +328,40 @@ export default function TasksPage() {
             onSave={handleSaveTask}
             initialData={editingTask}
          />
+
+         {/* Timer Switch Confirmation Modal */}
+         {pendingStartTaskId && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+               <div
+                  className="absolute inset-0 bg-zinc-950/20 backdrop-blur-sm animate-in fade-in duration-200"
+                  onClick={() => setPendingStartTaskId(null)}
+               />
+               <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-zinc-950/5 border border-zinc-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200 p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-100/50">
+                     <Clock className="w-6 h-6" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-zinc-950 mb-2">Switch Active Timer?</h2>
+                  <p className="text-sm text-zinc-500 mb-6 text-balance">
+                     You already have a task in progress. Do you want to stop the current timer and
+                     start tracking this one instead?
+                  </p>
+                  <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-center gap-3">
+                     <button
+                        onClick={() => setPendingStartTaskId(null)}
+                        className="h-10 px-4 w-full sm:w-auto font-medium text-sm text-zinc-700 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors shadow-sm"
+                     >
+                        Cancel
+                     </button>
+                     <button
+                        onClick={handleConfirmSwitchTimer}
+                        className="h-10 px-4 w-full sm:w-auto font-medium text-sm text-white bg-zinc-950 border border-zinc-950 rounded-lg hover:bg-zinc-900 transition-colors shadow-sm"
+                     >
+                        Stop Old & Start New
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    );
 }
