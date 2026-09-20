@@ -10,11 +10,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../schema';
 import { useRegisterUser } from '../hooks';
 import type { RegisterInput } from '../types';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function SignupForm() {
    const [showPassword, setShowPassword] = useState(false);
    const [apiError, setApiError] = useState<string | null>(null);
    const navigate = useNavigate();
+   const queryClient = useQueryClient();
 
    const {
       register,
@@ -32,6 +34,7 @@ export function SignupForm() {
       toast.promise(registerMutation.mutateAsync(data), {
          loading: 'Creating your account...',
          success: () => {
+            queryClient.invalidateQueries({ queryKey: ['user'] });
             navigate('/dashboard');
             return 'Account created successfully!';
          },

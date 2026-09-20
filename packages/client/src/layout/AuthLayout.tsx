@@ -1,6 +1,22 @@
-import { Outlet } from 'react-router';
+import { Outlet, Navigate } from 'react-router';
+import { useUser } from '@/features/auth/hooks';
+import { Loader2 } from 'lucide-react';
 
 export default function AuthLayout() {
+   const { data: userResponse, isLoading } = useUser();
+
+   if (isLoading) {
+      return (
+         <div className="min-h-screen flex items-center justify-center bg-white">
+            <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
+         </div>
+      );
+   }
+
+   if (userResponse?.data) {
+      return <Navigate to="/dashboard" replace />;
+   }
+
    return (
       <div className="min-h-screen w-full flex bg-white font-sans selection:bg-zinc-200">
          {/* Left Side - Brand Context */}
