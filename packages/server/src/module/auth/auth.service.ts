@@ -15,7 +15,7 @@ export class AuthService {
 
       const passwordHash = await bcrypt.hash(data.password, 10);
 
-      const user = await AuthRepository.createUser(data.email, passwordHash);
+      const user = await AuthRepository.createUser(data.name, data.email, passwordHash);
 
       return user;
    }
@@ -34,7 +34,7 @@ export class AuthService {
       }
 
       const token = jwt.sign(
-         { userId: user.id, email: user.email },
+         { userId: user.id, name: user.name, email: user.email },
          env.JWT_SECRET || 'fallback_secret',
          { expiresIn: '7d' }
       );
@@ -42,6 +42,7 @@ export class AuthService {
       return {
          user: {
             id: user.id,
+            name: user.name,
             email: user.email,
          },
          token,

@@ -7,14 +7,16 @@ export class AuthRepository {
       });
    }
 
-   static async createUser(email: string, passwordHash: string) {
+   static async createUser(name: string, email: string, passwordHash: string) {
       return prisma.user.create({
          data: {
+            name,
             email,
             passwordHash,
          },
          select: {
             id: true,
+            name: true,
             email: true,
             createdAt: true,
          },
