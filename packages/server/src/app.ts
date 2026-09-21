@@ -9,8 +9,10 @@ import taskRoutes from './module/task/task.route.js';
 import timeLogRoutes from './module/time-log/time-log.route.js';
 import summaryRoutes from './module/summary/summary.route.js';
 import { errorHandler } from './middleware/error.middleware.js';
+import morgan from 'morgan';
 
 const app = express();
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(
