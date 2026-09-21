@@ -13,6 +13,9 @@ vi.mock('../../config/env.js', () => ({
 vi.mock('./auth.service.js', () => ({
    AuthService: { login: vi.fn(), register: vi.fn() },
 }));
+vi.mock('./auth.repository.js', () => ({
+   AuthRepository: { findUserById: vi.fn().mockResolvedValue({ id: 'user-1' }) },
+}));
 
 describe('Production authentication cookies', () => {
    let server: Server;

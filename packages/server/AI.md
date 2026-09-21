@@ -26,7 +26,9 @@ Both fields are trimmed. At least one must contain text; title is limited to 200
 }
 ```
 
-The frontend should let users review the suggestion and save through the existing task endpoints. Frontend integration is not included yet.
+The Create Task dialog includes an optional **Improve with AI** action. It sends the current draft to this endpoint and displays an editable suggestion without changing the original fields. **Use Suggestion** fills the form; **Keep Original** discards the preview. The existing **Create Task** action saves the chosen values. Editing an original field dismisses its preview, and closing the dialog clears AI state. The edit-task dialog does not expose AI improvement.
+
+For UI review, verify title-only and description-only drafts, editing a suggestion before applying, keeping the original, and closing/reopening during a request. Empty drafts cannot request suggestions. While the request is pending, the original fields are read-only and duplicate requests are disabled; creating with the original remains available. While reviewing a suggestion, choose Use Suggestion or Keep Original before creating. AI errors leave manual creation available. The frontend uses a 20-second timeout and no automatic mutation retries.
 
 ## Behavior and errors
 

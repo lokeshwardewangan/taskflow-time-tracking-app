@@ -1,6 +1,10 @@
 import { prisma } from '../../../prisma/config.js';
 
 export class AuthRepository {
+   static async findUserById(id: string) {
+      return prisma.user.findUnique({ where: { id }, select: { id: true } });
+   }
+
    static async findUserByEmail(email: string) {
       return prisma.user.findUnique({
          where: { email },

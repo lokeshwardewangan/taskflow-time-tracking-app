@@ -27,6 +27,9 @@ vi.mock('../../config/env.js', () => ({
    env: { JWT_SECRET: 'test-task-ai-secret', AI_ENABLED: true, OPENAI_API_KEY: 'test-key' },
 }));
 vi.mock('./task.repository.js', () => ({ TaskRepository: {} }));
+vi.mock('../auth/auth.repository.js', () => ({
+   AuthRepository: { findUserById: vi.fn().mockResolvedValue({ id: 'user-1' }) },
+}));
 
 describe('POST /api/tasks/improve', () => {
    let server: Server;
