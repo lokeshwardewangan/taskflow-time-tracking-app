@@ -33,26 +33,24 @@ export default function TasksPage() {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-   // Timer Mocks (Patching query state in real-time)
+   // Timer State
    const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+   const [activeTaskSessionTime, setActiveTaskSessionTime] = useState<number>(0);
    const [pendingStartTaskId, setPendingStartTaskId] = useState<string | null>(null);
+
    const activeTask = tasks.find((t) => t.id === activeTaskId);
+   // Provide a live-computed version of the active task
+   const liveActiveTask = activeTask
+      ? { ...activeTask, trackedTime: activeTask.trackedTime + activeTaskSessionTime }
+      : undefined;
 
    useEffect(() => {
       if (!activeTaskId) return;
       const interval = setInterval(() => {
-         queryClient.setQueryData(['tasks'], (oldData: { data: Task[] } | undefined) => {
-            if (!oldData) return oldData;
-            return {
-               ...oldData,
-               data: oldData.data.map((t: Task) =>
-                  t.id === activeTaskId ? { ...t, trackedTime: t.trackedTime + 1 } : t
-               ),
-            };
-         });
+         setActiveTaskSessionTime((prev) => prev + 1);
       }, 1000);
       return () => clearInterval(interval);
-   }, [activeTaskId, queryClient]);
+   }, [activeTaskId]);
 
    // --- Actions ---
    const handleStartTimer = (id: string) => {
@@ -61,6 +59,7 @@ export default function TasksPage() {
          return;
       }
       setActiveTaskId(id);
+      setActiveTaskSessionTime(0);
       startTimerMutation.mutate(id);
    };
 
@@ -73,6 +72,7 @@ export default function TasksPage() {
       }
 
       setActiveTaskId(pendingStartTaskId);
+      setActiveTaskSessionTime(0);
       startTimerMutation.mutate(pendingStartTaskId);
       setPendingStartTaskId(null);
    };
@@ -83,7 +83,10 @@ export default function TasksPage() {
    };
 
    const handleStopTimer = (id: string) => {
-      if (activeTaskId === id) setActiveTaskId(null);
+      if (activeTaskId === id) {
+         setActiveTaskId(null);
+         setActiveTaskSessionTime(0);
+      }
 
       const current = tasks.find((t) => t.id === id);
       if (current) {
@@ -98,6 +101,7 @@ export default function TasksPage() {
    const handleComplete = (id: string) => {
       if (activeTaskId === id) {
          setActiveTaskId(null);
+         setActiveTaskSessionTime(0);
          stopTimerMutation.mutate(id);
       }
       const current = tasks.find((t) => t.id === id);
@@ -111,7 +115,10 @@ export default function TasksPage() {
    };
 
    const handleDelete = (id: string) => {
-      if (activeTaskId === id) setActiveTaskId(null);
+      if (activeTaskId === id) {
+         setActiveTaskId(null);
+         setActiveTaskSessionTime(0);
+      }
       deleteTaskMutation.mutate(id, {
          onSuccess: () => toast.success('Task deleted successfully'),
       });
@@ -142,19 +149,23 @@ export default function TasksPage() {
    };
 
    // --- Derived State ---
-   const filteredTasks = tasks.filter((t) => {
-      const matchesSearch =
-         t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         t.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = filterStatus === 'ALL' || t.status === filterStatus;
-      return matchesSearch && matchesStatus;
-   });
+   const filteredTasks = tasks
+      .map((t) =>
+         t.id === activeTaskId ? { ...t, trackedTime: t.trackedTime + activeTaskSessionTime } : t
+      )
+      .filter((t) => {
+         const matchesSearch =
+            t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.description.toLowerCase().includes(searchQuery.toLowerCase());
+         const matchesStatus = filterStatus === 'ALL' || t.status === filterStatus;
+         return matchesSearch && matchesStatus;
+      });
 
    return (
       <div className="pb-20">
          <main className="max-w-[1400px] mx-auto px-6 mt-10">
             {/* Global Active Timer Banner */}
-            {activeTask && (
+            {liveActiveTask && (
                <div className="mb-8 p-4 sm:p-5 rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
                      <div className="w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm flex flex-shrink-0 items-center justify-center relative">
@@ -167,9 +178,9 @@ export default function TasksPage() {
                         </span>
                         <h3
                            className="text-[15px] font-semibold text-zinc-900 truncate mt-0.5"
-                           title={activeTask.title}
+                           title={liveActiveTask.title}
                         >
-                           {activeTask.title}
+                           {liveActiveTask.title}
                         </h3>
                      </div>
                   </div>
@@ -178,11 +189,11 @@ export default function TasksPage() {
                      <div className="flex bg-white items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-200 shadow-sm">
                         <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                         <span className="font-mono font-medium text-sm text-zinc-700">
-                           {formatTime(activeTask.trackedTime)}
+                           {formatTime(liveActiveTask.trackedTime)}
                         </span>
                      </div>
                      <button
-                        onClick={() => handleStopTimer(activeTask.id)}
+                        onClick={() => handleStopTimer(liveActiveTask.id)}
                         className="flex items-center gap-2 px-4 py-2 bg-zinc-950 text-white rounded-lg text-sm font-semibold hover:bg-zinc-800 transition-all shadow-sm active:scale-95"
                      >
                         <Square className="w-3.5 h-3.5 fill-current" /> Stop Timer
