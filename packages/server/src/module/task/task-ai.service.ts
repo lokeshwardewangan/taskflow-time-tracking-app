@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 import { zodTextFormat } from 'openai/helpers/zod';
 import { env } from '../../config/env.js';
 import { ApiError, HTTP } from '../../utils/response.js';
@@ -41,8 +41,8 @@ export class TaskAIService {
          });
 
          const refused = response.output.some(
-            (item) =>
-               item.type === 'message' && item.content.some((part) => part.type === 'refusal')
+            (item: any) =>
+               item.type === 'message' && item.content.some((part: any) => part.type === 'refusal')
          );
          if (refused) {
             throw new ApiError(HTTP.UNPROCESSABLE_ENTITY, 'AI could not improve this task');
@@ -60,7 +60,7 @@ export class TaskAIService {
                'AI request timed out. Please try again later'
             );
          }
-         if (error instanceof OpenAI.APIError && error.status === 429) {
+         if (error instanceof OpenAI.APIError && (error as any).status === 429) {
             throw new ApiError(
                HTTP.SERVICE_UNAVAILABLE,
                'AI is temporarily busy or its quota is exhausted'

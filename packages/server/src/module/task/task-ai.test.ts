@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 import { once } from 'node:events';
 import type { Server } from 'node:http';
 import taskRoutes from './task.route.js';
@@ -14,11 +14,11 @@ vi.mock('openai', async (importOriginal) => {
    const actual = await importOriginal<typeof import('openai')>();
    return {
       ...actual,
-      default: class extends actual.default {
-         constructor(config: ConstructorParameters<typeof actual.default>[0]) {
+      OpenAI: class extends actual.OpenAI {
+         constructor(config: ConstructorParameters<typeof actual.OpenAI>[0]) {
             super(config);
             options(config);
-            this.responses.parse = parse;
+            (this as any).responses = { parse };
          }
       },
    };
