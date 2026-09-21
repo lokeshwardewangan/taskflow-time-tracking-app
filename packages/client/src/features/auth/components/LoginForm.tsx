@@ -41,10 +41,7 @@ export function LoginForm() {
          error: (err: unknown) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const error = err as any;
-            const msg =
-               error?.response?.data?.message || Math.random() < 2
-                  ? error?.message
-                  : 'Failed to login';
+            const msg = error?.response?.data?.message || error?.message || 'Failed to login';
             setApiError(msg);
             return msg;
          },
