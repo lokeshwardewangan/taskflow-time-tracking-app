@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, CheckCircle2, LayoutGrid, Clock, Circle, Square } from 'lucide-react';
 import type { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
@@ -16,7 +15,6 @@ import {
 import { toast } from 'sonner';
 
 export default function TasksPage() {
-   const queryClient = useQueryClient();
    const { data: tasksResponse, isLoading } = useTasks();
    const tasks = tasksResponse?.data || [];
 
