@@ -35,7 +35,7 @@ export function LoginForm() {
          loading: 'Signing in...',
          success: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            navigate('/dashboard');
+            navigate('/tasks');
             return 'Successfully signed in!';
          },
          error: (err: unknown) => {
@@ -125,6 +125,18 @@ export function LoginForm() {
                ) : (
                   'Continue'
                )}
+            </Button>
+
+            <Button
+               type="button"
+               disabled={loginMutation.isPending}
+               onClick={() => {
+                  onSubmit({ email: 'lokeshwar@gmail.com', password: '123456' });
+               }}
+               variant="outline"
+               className="w-full h-11 font-medium shadow-sm transition-all active:scale-[0.98] mt-3 rounded-lg disabled:opacity-70"
+            >
+               Login as Guest / Test User
             </Button>
          </form>
 

@@ -10,7 +10,7 @@ export default function AuthLayout() {
    }
 
    if (userResponse?.data) {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to="/tasks" replace />;
    }
 
    return (

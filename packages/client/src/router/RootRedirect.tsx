@@ -7,6 +7,6 @@ export function RootRedirect() {
    if (isLoading) {
       return <SplashLoader message="Loading interface..." />;
    }
-   if (userResponse?.data) return <Navigate to="/dashboard" replace />;
+   if (userResponse?.data) return <Navigate to="/tasks" replace />;
    return <Navigate to="/auth/login" replace />;
 }
