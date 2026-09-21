@@ -1,6 +1,6 @@
-import { TimeLogRepository } from './time-log.repository';
-import { TaskRepository } from '../task/task.repository';
-import { ApiError, HTTP } from '../../utils/response';
+import { TimeLogRepository } from './time-log.repository.js';
+import { TaskRepository } from '../task/task.repository.js';
+import { ApiError, HTTP } from '../../utils/response.js';
 
 export class TimeLogService {
    static async getActiveTimer(userId: string) {

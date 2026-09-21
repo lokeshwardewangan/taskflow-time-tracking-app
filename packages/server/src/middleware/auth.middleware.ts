@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env';
-import { ApiResponse, HTTP } from '../utils/response';
+import { env } from '../config/env.js';
+import { ApiResponse, HTTP } from '../utils/response.js';
 
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
    let token = req.cookies?.token;

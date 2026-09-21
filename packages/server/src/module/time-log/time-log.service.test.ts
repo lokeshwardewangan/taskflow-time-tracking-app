@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TimeLogService } from './time-log.service';
-import { TimeLogRepository } from './time-log.repository';
-import { TaskRepository } from '../task/task.repository';
-import { ApiError } from '../../utils/response';
+import { TimeLogService } from './time-log.service.js';
+import { TimeLogRepository } from './time-log.repository.js';
+import { TaskRepository } from '../task/task.repository.js';
+import { ApiError } from '../../utils/response.js';
 
-vi.mock('./time-log.repository', () => ({
+vi.mock('./time-log.repository.js', () => ({
    TimeLogRepository: {
       findActiveLog: vi.fn(),
       createLog: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('./time-log.repository', () => ({
    },
 }));
 
-vi.mock('../task/task.repository', () => ({
+vi.mock('../task/task.repository.js', () => ({
    TaskRepository: {
       findTaskByIdAndUser: vi.fn(),
       updateTask: vi.fn(),

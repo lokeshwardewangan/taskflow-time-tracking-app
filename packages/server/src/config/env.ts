@@ -13,7 +13,10 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-   console.error('Invalid environment variables. Fix the values in your .env file and restart.');
+   const invalidKeys = [...new Set(parsed.error.issues.map((issue) => issue.path.join('.')))];
+   console.error(
+      `Invalid environment variables: ${invalidKeys.join(', ')}. Set them in your hosting environment or local .env file and restart.`
+   );
    process.exit(1);
 }
 

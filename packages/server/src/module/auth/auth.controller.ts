@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import { AuthService } from './auth.service';
-import asyncHandler from '../../utils/async-handler';
-import { registerSchema, loginSchema } from './auth.schema';
-import { ApiResponse, HTTP } from '../../utils/response';
+import { AuthService } from './auth.service.js';
+import asyncHandler from '../../utils/async-handler.js';
+import { registerSchema, loginSchema } from './auth.schema.js';
+import { ApiResponse, HTTP } from '../../utils/response.js';
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
    const data = registerSchema.parse(req.body);

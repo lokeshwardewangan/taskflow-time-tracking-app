@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireAuth } from '../../middleware/auth.middleware';
-import { getActiveTimer, startTimer, stopTimer, getLogsByTask } from './time-log.controller';
+import { requireAuth } from '../../middleware/auth.middleware.js';
+import { getActiveTimer, startTimer, stopTimer, getLogsByTask } from './time-log.controller.js';
 
 const router = Router();
 

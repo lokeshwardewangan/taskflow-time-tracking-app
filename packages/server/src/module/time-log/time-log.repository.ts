@@ -1,4 +1,4 @@
-import { prisma } from '../../../prisma/config';
+import { prisma } from '../../../prisma/config.js';
 
 export class TimeLogRepository {
    static async findActiveLog(userId: string) {

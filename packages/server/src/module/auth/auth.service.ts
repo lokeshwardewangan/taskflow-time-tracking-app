@@ -1,9 +1,9 @@
-import { AuthRepository } from './auth.repository';
+import { AuthRepository } from './auth.repository.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { env } from '../../config/env';
-import type { RegisterInput, LoginInput } from './auth.schema';
-import { ApiError, HTTP } from '../../utils/response';
+import { env } from '../../config/env.js';
+import type { RegisterInput, LoginInput } from './auth.schema.js';
+import { ApiError, HTTP } from '../../utils/response.js';
 
 export class AuthService {
    static async register(data: RegisterInput) {

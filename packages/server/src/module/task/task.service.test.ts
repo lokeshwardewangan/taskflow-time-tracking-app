@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TaskService } from './task.service';
-import { TaskRepository } from './task.repository';
-import { ApiError } from '../../utils/response';
+import { TaskService } from './task.service.js';
+import { TaskRepository } from './task.repository.js';
+import { ApiError } from '../../utils/response.js';
 
 // Mock the repository completely
-vi.mock('./task.repository', () => ({
+vi.mock('./task.repository.js', () => ({
    TaskRepository: {
       findTaskByIdAndUser: vi.fn(),
       findAllTasksByUser: vi.fn(),

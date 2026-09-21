@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { SummaryService } from './summary.service';
-import asyncHandler from '../../utils/async-handler';
-import { ApiResponse, HTTP } from '../../utils/response';
+import { SummaryService } from './summary.service.js';
+import asyncHandler from '../../utils/async-handler.js';
+import { ApiResponse, HTTP } from '../../utils/response.js';
 
 export const getDailySummary = asyncHandler(async (req: Request, res: Response) => {
    // @ts-ignore

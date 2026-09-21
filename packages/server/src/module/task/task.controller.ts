@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import { TaskService } from './task.service';
-import asyncHandler from '../../utils/async-handler';
-import { createTaskSchema, updateTaskSchema } from './task.schema';
-import { ApiResponse, HTTP } from '../../utils/response';
+import { TaskService } from './task.service.js';
+import asyncHandler from '../../utils/async-handler.js';
+import { createTaskSchema, updateTaskSchema } from './task.schema.js';
+import { ApiResponse, HTTP } from '../../utils/response.js';
 
 export const getTasks = asyncHandler(async (req: Request, res: Response) => {
    // @ts-ignore Set by auth middleware

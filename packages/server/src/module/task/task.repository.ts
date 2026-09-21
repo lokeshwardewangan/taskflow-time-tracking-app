@@ -1,4 +1,4 @@
-import { prisma } from '../../../prisma/config';
+import { prisma } from '../../../prisma/config.js';
 import type { Prisma } from '../../generated/prisma/client.ts';
 
 export class TaskRepository {

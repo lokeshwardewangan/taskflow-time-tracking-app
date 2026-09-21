@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { TimeLogService } from './time-log.service';
-import asyncHandler from '../../utils/async-handler';
-import { ApiResponse, HTTP } from '../../utils/response';
+import { TimeLogService } from './time-log.service.js';
+import asyncHandler from '../../utils/async-handler.js';
+import { ApiResponse, HTTP } from '../../utils/response.js';
 
 export const getActiveTimer = asyncHandler(async (req: Request, res: Response) => {
    // @ts-ignore

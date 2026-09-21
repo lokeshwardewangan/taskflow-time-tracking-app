@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireAuth } from '../../middleware/auth.middleware';
-import { getDailySummary } from './summary.controller';
+import { requireAuth } from '../../middleware/auth.middleware.js';
+import { getDailySummary } from './summary.controller.js';
 
 const router = Router();
 

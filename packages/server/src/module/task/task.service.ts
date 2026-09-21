@@ -1,6 +1,6 @@
-import { TaskRepository } from './task.repository';
-import type { CreateTaskInput, UpdateTaskInput } from './task.schema';
-import { ApiError, HTTP } from '../../utils/response';
+import { TaskRepository } from './task.repository.js';
+import type { CreateTaskInput, UpdateTaskInput } from './task.schema.js';
+import { ApiError, HTTP } from '../../utils/response.js';
 
 export class TaskService {
    static async getTasks(userId: string) {

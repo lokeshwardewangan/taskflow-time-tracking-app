@@ -3,11 +3,11 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { env } from './config/env';
-import authRoutes from './module/auth/auth.route';
-import taskRoutes from './module/task/task.route';
-import timeLogRoutes from './module/time-log/time-log.route';
-import summaryRoutes from './module/summary/summary.route';
+import { env } from './config/env.js';
+import authRoutes from './module/auth/auth.route.js';
+import taskRoutes from './module/task/task.route.js';
+import timeLogRoutes from './module/time-log/time-log.route.js';
+import summaryRoutes from './module/summary/summary.route.js';
 
 const app = express();
 app.use(express.json());

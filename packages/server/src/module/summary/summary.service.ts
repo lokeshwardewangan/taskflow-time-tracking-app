@@ -1,5 +1,5 @@
-import { TimeLogRepository } from '../time-log/time-log.repository';
-import { TaskRepository } from '../task/task.repository';
+import { TimeLogRepository } from '../time-log/time-log.repository.js';
+import { TaskRepository } from '../task/task.repository.js';
 
 export class SummaryService {
    static async getDailySummary(userId: string) {
