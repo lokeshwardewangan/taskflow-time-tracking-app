@@ -91,10 +91,6 @@ export function LoginForm() {
                   <Label htmlFor="password" className="text-zinc-700 font-medium">
                      Password
                   </Label>
-                  <a
-                     href="/forgot-password"
-                     className="text-sm text-zinc-500 hover:text-zinc-900 font-medium transition-colors"
-                  ></a>
                </div>
                <div className="relative">
                   <Input

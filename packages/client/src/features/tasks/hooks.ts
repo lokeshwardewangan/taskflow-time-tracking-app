@@ -7,10 +7,24 @@ import {
    getTaskTimeLogs,
    startTaskTimer,
    stopTaskTimer,
+   improveTask,
 } from './api';
 import type { TimeLog } from './api';
 import type { ApiResponse } from '@/types/api';
-import type { Task, CreateTaskInput, UpdateTaskInput } from './types';
+import type {
+   Task,
+   CreateTaskInput,
+   UpdateTaskInput,
+   ImproveTaskInput,
+   TaskSuggestion,
+} from './types';
+
+export const useImproveTask = () => {
+   return useMutation<ApiResponse<TaskSuggestion>, Error, ImproveTaskInput>({
+      mutationFn: improveTask,
+      retry: false,
+   });
+};
 
 export const useTasks = () => {
    return useQuery<ApiResponse<Task[]>, Error>({

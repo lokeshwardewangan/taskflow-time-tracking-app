@@ -9,6 +9,8 @@ export interface Task {
 }
 
 export type CreateTaskInput = Pick<Task, 'title' | 'description'>;
+export type ImproveTaskInput = Pick<Task, 'title' | 'description'>;
+export type TaskSuggestion = Pick<Task, 'title' | 'description'>;
 export type UpdateTaskInput = Partial<
    Pick<Task, 'title' | 'description' | 'status' | 'trackedTime'>
 >;

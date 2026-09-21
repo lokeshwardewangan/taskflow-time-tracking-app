@@ -1,5 +1,11 @@
 import api from '@/lib/api';
-import type { Task, CreateTaskInput, UpdateTaskInput } from './types';
+import type {
+   Task,
+   CreateTaskInput,
+   UpdateTaskInput,
+   ImproveTaskInput,
+   TaskSuggestion,
+} from './types';
 import type { ApiResponse } from '@/types/api';
 
 export interface TimeLog {
@@ -18,6 +24,15 @@ export const getTasks = async (): Promise<ApiResponse<Task[]>> => {
 
 export const createTask = async (payload: CreateTaskInput): Promise<ApiResponse<Task>> => {
    const { data } = await api.post<ApiResponse<Task>>('/tasks', payload);
+   return data;
+};
+
+export const improveTask = async (
+   payload: ImproveTaskInput
+): Promise<ApiResponse<TaskSuggestion>> => {
+   const { data } = await api.post<ApiResponse<TaskSuggestion>>('/tasks/improve', payload, {
+      timeout: 20_000,
+   });
    return data;
 };
 

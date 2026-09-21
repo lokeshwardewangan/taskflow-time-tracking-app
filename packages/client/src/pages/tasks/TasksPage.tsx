@@ -323,12 +323,14 @@ export default function TasksPage() {
          </main>
 
          {/* Extracted Form Modal Component */}
-         <TaskFormModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSave={handleSaveTask}
-            initialData={editingTask}
-         />
+         {isModalOpen && (
+            <TaskFormModal
+               isOpen={isModalOpen}
+               onClose={() => setIsModalOpen(false)}
+               onSave={handleSaveTask}
+               initialData={editingTask}
+            />
+         )}
 
          {/* Timer Switch Confirmation Modal */}
          {pendingStartTaskId && (
