@@ -9,7 +9,7 @@
    "scripts": {
       "start": "bun ./dist/index.js",
       "dev": "bun --watch src/index.ts",
-      "build": "prisma generate && bun build ./src/index.ts --outdir ./dist --target bun",
+      "build": "prisma generate && bun build ./src/index.ts --outdir ./dist --target bun --packages external",
       "postinstall": "bunx prisma generate",
       "check": "tsc --noEmit",
       "test": "vitest",

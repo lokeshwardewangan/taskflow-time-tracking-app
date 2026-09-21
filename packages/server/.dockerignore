@@ -1,0 +1,11 @@
+node_modules
+dist
+src/generated/prisma
+.git
+.gitignore
+.env
+.env.*
+Dockerfile
+.dockerignore
+README.md
+*.log
