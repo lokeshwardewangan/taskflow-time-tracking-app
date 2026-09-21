@@ -8,6 +8,7 @@ import authRoutes from './module/auth/auth.route.js';
 import taskRoutes from './module/task/task.route.js';
 import timeLogRoutes from './module/time-log/time-log.route.js';
 import summaryRoutes from './module/summary/summary.route.js';
+import { errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
 app.use(express.json());
@@ -37,5 +38,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/time-logs', timeLogRoutes);
 app.use('/api/summary', summaryRoutes);
+app.use(errorHandler);
 
 export default app;

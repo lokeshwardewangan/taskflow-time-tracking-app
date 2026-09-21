@@ -8,6 +8,11 @@ const envSchema = z.object({
    FRONTEND_URL: z.string().url(),
    DATABASE_URL: z.string().url(),
    JWT_SECRET: z.string().min(10, 'JWT secret must be at least 10 chars'),
+   AI_ENABLED: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
+   OPENAI_API_KEY: z.string().trim().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
