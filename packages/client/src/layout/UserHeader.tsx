@@ -1,3 +1,4 @@
+import { useEffect, useId, useRef, useState } from 'react';
 import { NavLink } from 'react-router';
 import { User, LogOut, ChevronDown } from 'lucide-react';
 import { useLogoutUser } from '@/features/auth/hooks';
@@ -12,6 +13,31 @@ interface UserHeaderProps {
 export function UserHeader({ user }: UserHeaderProps) {
    const logoutMutation = useLogoutUser();
    const queryClient = useQueryClient();
+   const [profileOpen, setProfileOpen] = useState(false);
+   const profileRef = useRef<HTMLDivElement>(null);
+   const profileButtonRef = useRef<HTMLButtonElement>(null);
+   const profileId = useId();
+
+   useEffect(() => {
+      if (!profileOpen) return;
+
+      const handlePointerDown = (event: PointerEvent) => {
+         if (!profileRef.current?.contains(event.target as Node)) setProfileOpen(false);
+      };
+      const handleKeyDown = (event: KeyboardEvent) => {
+         if (event.key === 'Escape') {
+            setProfileOpen(false);
+            profileButtonRef.current?.focus();
+         }
+      };
+
+      document.addEventListener('pointerdown', handlePointerDown);
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+         document.removeEventListener('pointerdown', handlePointerDown);
+         document.removeEventListener('keydown', handleKeyDown);
+      };
+   }, [profileOpen]);
 
    const handleLogout = () => {
       toast.promise(logoutMutation.mutateAsync(), {
@@ -28,9 +54,9 @@ export function UserHeader({ user }: UserHeaderProps) {
 
    return (
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-zinc-200/60">
-         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
+         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 md:gap-x-8 md:h-16">
             {/* Logo and Navigation */}
-            <div className="flex items-center gap-8 w-auto shrink-0">
+            <div className="contents">
                <div className="flex items-center gap-2.5 select-none w-auto shrink-0">
                   <div className="w-7 h-7 bg-zinc-950 text-white flex items-center justify-center rounded-md shrink-0 shadow-sm">
                      <svg
@@ -46,17 +72,20 @@ export function UserHeader({ user }: UserHeaderProps) {
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                      </svg>
                   </div>
-                  <span className="font-bold tracking-tight text-xl relative top-0.5 text-zinc-950 hidden sm:block">
+                  <span className="font-bold tracking-tight text-xl relative top-0.5 text-zinc-950">
                      TimeFlow
                   </span>
                </div>
                {/* Nav Links */}
-               <nav className="hidden md:flex items-center gap-1.5 px-6 border-l border-zinc-200/50">
+               <nav
+                  aria-label="Main navigation"
+                  className="row-start-2 col-span-2 md:row-start-1 md:col-start-2 md:col-span-1 flex items-center gap-1.5 pt-1 pb-2 md:py-0 md:pl-6 border-t md:border-t-0 md:border-l border-zinc-200/50"
+               >
                   <NavLink
                      to="/dashboard"
                      end
                      className={({ isActive }) =>
-                        `px-3 py-1.5 rounded-md text-sm font-medium transition-all ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
+                        `flex min-h-11 flex-1 md:flex-none items-center justify-center px-3 py-1.5 rounded-md text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
                      }
                   >
                      Dashboard
@@ -64,7 +93,7 @@ export function UserHeader({ user }: UserHeaderProps) {
                   <NavLink
                      to="/tasks"
                      className={({ isActive }) =>
-                        `px-3 py-1.5 rounded-md text-sm font-medium transition-all ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
+                        `flex min-h-11 flex-1 md:flex-none items-center justify-center px-3 py-1.5 rounded-md text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 ${isActive ? 'bg-zinc-100/80 text-zinc-950 shadow-sm border border-zinc-200/50' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border border-transparent'}`
                      }
                   >
                      Tasks
@@ -72,36 +101,53 @@ export function UserHeader({ user }: UserHeaderProps) {
                </nav>
             </div>
 
-            {/* Space to keep Profile aligned Right */}
-            <div className="flex-1" />
-
             {/* Right Side Actions & Profile */}
-            <div className="flex items-center justify-end gap-3 shrink-0">
+            <div className="row-start-1 col-start-2 md:col-start-3 flex h-16 items-center justify-end min-w-0">
                {/* User Profile Dropdown */}
-               <div className="relative group/nav">
-                  <button className="flex items-center cursor-pointer gap-2.5 hover:bg-zinc-50 pl-1 pr-3 py-1 rounded-full border border-transparent hover:border-zinc-200 transition-all outline-none">
+               <div
+                  ref={profileRef}
+                  className="relative"
+                  onBlur={(event) => {
+                     if (!event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
+                  }}
+               >
+                  <button
+                     ref={profileButtonRef}
+                     type="button"
+                     aria-label="Your profile"
+                     aria-expanded={profileOpen}
+                     aria-controls={profileId}
+                     onClick={() => setProfileOpen((open) => !open)}
+                     className="flex min-h-11 items-center cursor-pointer gap-2.5 hover:bg-zinc-50 pl-1 pr-3 py-1 rounded-full border border-transparent hover:border-zinc-200 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+                  >
                      <div className="w-8 h-8 rounded-full bg-zinc-950 text-white flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                         <User className="w-4 h-4" />
                      </div>
-                     <span className="text-sm font-semibold text-zinc-700 hidden sm:block tracking-tight">
+                     <span className="max-w-32 lg:max-w-48 truncate text-sm font-semibold text-zinc-700 hidden sm:block tracking-tight">
                         {user.name || 'User'}
                      </span>
-                     <ChevronDown className="w-3.5 h-3.5 text-zinc-400 hidden sm:block transition-transform group-hover/nav:-rotate-180 duration-300" />
+                     <ChevronDown
+                        className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${profileOpen ? '-rotate-180' : ''}`}
+                     />
                   </button>
 
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 top-full mt-1.5 w-48 bg-white border border-zinc-200 shadow-xl rounded-xl opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all origin-top-right transform scale-95 group-hover/nav:scale-100 z-50">
+                  <div
+                     id={profileId}
+                     hidden={!profileOpen}
+                     className="absolute right-0 top-full mt-1.5 w-64 max-w-[calc(100vw-2rem)] bg-white border border-zinc-200 shadow-xl rounded-xl z-50"
+                  >
                      <div className="p-1.5 flex flex-col gap-0.5">
                         <div className="px-3 flex flex-col py-2 border-b border-zinc-100 mb-1">
-                           <span className="text-sm font-semibold text-zinc-900">
+                           <span className="text-sm font-semibold text-zinc-900 wrap-anywhere">
                               {user.name || 'User'}
                            </span>
-                           <span className="text-xs text-zinc-500 truncate">{user.email}</span>
+                           <span className="text-xs text-zinc-500 wrap-anywhere">{user.email}</span>
                         </div>
                         <button
                            onClick={handleLogout}
                            disabled={logoutMutation.isPending}
-                           className="flex items-center cursor-pointer gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors font-medium text-left"
+                           className="flex min-h-11 items-center cursor-pointer gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors font-medium text-left focus-visible:outline-2 focus-visible:outline-red-500"
                         >
                            <LogOut className="w-4 h-4" /> Log out
                         </button>
